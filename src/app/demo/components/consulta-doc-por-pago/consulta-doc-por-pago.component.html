@@ -1,0 +1,61 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
+
+<div class="container">
+    <p-panel header="Consulta doc.histórico" class="mb-3">
+        <p-breadcrumb [model]="items" class="max-w-full;"></p-breadcrumb>
+        <br/>
+        <div class="search-bar">
+            <input type="text" pInputText placeholder="" [(ngModel)]="textoBuscar" (keyup.enter)="buscar()" class="mr-3 w-5"/>
+            <p-button pButton type="button" label="Buscar" icon="pi pi-search"
+            class="p-ml-2" style="height: 35px;" (click)="buscar()"></p-button>
+            
+            
+        </div>
+        <b class="">* digitar ruc , razon social, nro doc</b>
+    </p-panel>
+    <br />
+    <div class="card p-2">
+        <p-table [value]="consultaDocPorPagoList" 
+        [scrollable]="true" [tableStyle]="{width: '100%', border: '0px solid black'}"  [loading]="load">
+        <ng-template pTemplate="header">
+            <tr>
+            <th>RUC</th>
+            <th>Nombre</th>
+            <th>Tipo Doc</th>
+            <th>Numero</th>
+            <th>Fecha</th>
+            <th>Importe</th>
+            <th>Fecha Pago</th>
+            <th>Importe Pagado</th>
+            <th>Ver Comprobante de pago</th>
+            </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-doc>
+            <tr>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.ruc }}</td>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.nombreEmpresa }}</td>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.nombreTipoDocumento }}</td>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.nroDoc }}</td>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.fechaDocumento }}</td>
+            <td style="text-align: right; white-space: nowrap;">{{ doc.importeDocumento | number : "1.2-2" }}</td>
+            <td style="text-align: left; white-space: nowrap;">{{ doc.fechaPago}}</td>
+            <td style="text-align: right; white-space: nowrap;">{{ doc.importePago | number : "1.2-2" }}</td>
+            <td style="text-align: center; white-space: nowrap;">
+                <p-button *ngIf="doc.fechaPago !== '' "label="" icon="pi pi-file"
+                            styleClass="p-button-sm p-button-info"
+                            (onClick)="abrirdocumento(doc.fechaPago, doc.numeroPresupuesto)
+                            " [text]="false">
+                </p-button>
+                <p-button *ngIf="doc.fechaPago === '' " label="" icon="pi pi-file-excel"
+                            styleClass="p-button-sm p-button-danger" [disabled]="true" [text]="false">
+                </p-button>
+            </td>
+            </tr>
+        </ng-template>
+        </p-table>
+    </div>
+
+
+</div>

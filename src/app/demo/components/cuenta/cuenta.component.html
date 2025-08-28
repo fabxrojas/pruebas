@@ -1,0 +1,178 @@
+<p-confirmDialog></p-confirmDialog>
+<div style="margin: 10px;">
+    <p-panel header="Lista de Bancos">
+        <p-breadcrumb class="max-w-full" [model]="items"></p-breadcrumb>
+    </p-panel>
+</div>
+<div style="margin:10px;">
+    <p-toast></p-toast>
+    <p-card>
+        <div class="flex align-items-center mb-3">
+            <h5>Número de cuentas bancarias - {{descripcion}}</h5>
+        </div>
+        <!-- Botón para agregar nueva rowData bancaria -->
+        <div class="flex align-items-center mb-3">
+            <p-button (click)="showAddRow()" icon="pi pi-plus" label="Nuevo" class="mr-3"
+                [disabled]="isEditingAnyRow"></p-button>
+        </div>
+
+
+        <p-table [value]="Cuenta_BancariaList"
+            dataKey="iCuenta"
+            [paginator]="true"
+            [rows]="5"
+            [rowsPerPageOptions]="[5, 10, 20]"
+            selectionMode="single"
+            editMode="row"
+            [tableStyle]="{ 'width': '100%', 'border': '0px solid black' }">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th *ngIf="ocultarColumna" style="width: 120px;">IdEmpresa</th>
+                    <th *ngIf="ocultarColumna" style="width: 120px;">IdBanco</th>
+                    <th *ngIf="ocultarColumna" style="width: 120px;">Id</th>
+                    <th style="width: 150px;">Banco</th>
+                    <th style="width: 150px;">Id Cuenta</th>
+                    <th style="width: 120px;">Moneda</th>
+                    <th style="width: 180px;">Cuenta Bancaria</th>
+                    <!-- <th style="width: 150px; visibility: collapse;">Cta Contable</th>
+                    <th style="width: 150px; visibility: collapse;">Cta ITF</th>
+                    <th style="width: 120px; visibility: collapse;">Pref</th>
+                    <th style="width: 150px; visibility: collapse;">Cta Gastos</th>
+                    <th style="width: 100px; visibility: collapse;">Acciones</th> -->
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-ri="rowIndex" let-editing="editing">
+                <tr [pEditableRow]="rowData">
+                    <td *ngIf="ocultarColumna" style="width: 120px;">{{ rowData.idEmpresa }}</td>
+                    <td *ngIf="ocultarColumna" style="width: 120px;">{{ rowData.idBanco }}</td>
+                    <td *ngIf="ocultarColumna" style="width: 120px;">{{ rowData.id }}</td>
+                    <td style="width: 150px;">{{ rowData.nombreBanco }}</td>
+                    <td style="width: 150px;">{{ rowData.idCuenta }}</td>
+                    <td class="centered" style="width: 120px;">
+                        <div *ngIf="editingRowIndex === ri">
+                            <p-dropdown [options]="moneda" optionLabel="nombre" optionValue="id"
+                                [(ngModel)]="rowData.moneda" (onChange)="onMonedaChange($event)"
+                                [filter]="true"
+                                filterBy="nombre" placeholder="Moneda" appendTo="body">
+                            </p-dropdown>
+
+                        </div>
+                        <div *ngIf="editingRowIndex !== ri">
+                            {{ rowData.moneda }}
+                        </div>
+                    </td>
+                    <td style="width: 180px;">
+                        <div *ngIf="editingRowIndex!== ri">
+                            {{ rowData.nombreCuentaBancaria }}
+                        </div>
+                        <div *ngIf="editingRowIndex === ri">
+                            <input pInputText type="text" [(ngModel)]="rowData.nombreCuentaBancaria"
+                            class="p-inputtext-sm w-full" required>
+                        </div>
+                    </td>
+                    <!-- <td style="width: 180px;">{{ rowData.nombreCuentaBancaria }}</td> -->
+                    <!-- <td style="width: 150px;">                        
+                        <div *ngIf="editingRowIndex !== ri">
+                            {{ rowData.ctaContable }}
+                        </div>
+                        <div *ngIf="editingRowIndex === ri">
+                            <input pInputText type="text" [(ngModel)]="rowData.ctaContable"
+                                class="p-inputtext-sm w-full" required>
+                        </div>
+                    </td> -->
+                    <!-- <td style="width: 150px;">
+                        <div *ngIf="editingRowIndex !== ri">
+                            {{ rowData.ctaITF }}
+                        </div>
+                        <div *ngIf="editingRowIndex === ri">
+                            <input pInputText type="text" [(ngModel)]="rowData.ctaITF" class="p-inputtext-sm w-full"
+                                required>
+                        </div>
+                    </td> -->
+                    <!-- <td style="width: 120px;">
+                        <div *ngIf="editingRowIndex !== ri">
+                            {{ rowData.pref }}
+                        </div>
+                        <div *ngIf="editingRowIndex === ri">
+                            <input pInputText type="text" [(ngModel)]="rowData.pref" class="p-inputtext-sm w-full"
+                                required>
+                        </div>
+                    </td> -->
+                    <!-- <td style="width: 150px;">
+                        <div *ngIf="editingRowIndex !== ri">
+                            {{ rowData.ctaGastos }}
+                        </div>
+                        <div *ngIf="editingRowIndex === ri">
+                            <input pInputText type="text" [(ngModel)]="rowData.ctaGastos" class="p-inputtext-sm w-full"
+                                required>
+                        </div>
+                    </td> -->
+                    <td style="width: 100px;">
+                        <div style="display: flex; gap: 5px; justify-content: flex-start;">
+                            <!-- Editar -->
+                            <button *ngIf="editingRowIndex !== ri" pButton pInitEditableRow
+                                (click)="onRowEditInit(rowData, ri)" icon="pi pi-pencil" tooltipPosition="top"
+                                [disabled]="isNew || isEditingAnyRow" class="p-button-rounded p-button-text p-button-sm"
+                                pTooltip="Editar"></button>
+
+                            <!-- Guardar -->
+                            <button *ngIf="editingRowIndex === ri" pButton pSaveEditableRow
+                                (click)="onRowEditSave(rowData, ri)" icon="pi pi-check" tooltipPosition="top"
+                                class="p-button-rounded p-button-text p-button-sm p-button-success"
+                                pTooltip="Guardar"></button>
+
+                            <!-- Cancelar -->
+                            <button *ngIf="editingRowIndex === ri" pButton (click)="onRowEditCancel(ri)"
+                                icon="pi pi-times" tooltipPosition="top"
+                                class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                                pTooltip="Cancelar"></button>
+
+                            <!-- Eliminar -->
+                            <button *ngIf="editingRowIndex !== ri" pButton type="button" (click)="onDelete(rowData, ri)"
+                                icon="pi pi-trash" pTooltip="Eliminar" tooltipPosition="top"
+                                [disabled]="isNew || isEditingAnyRow"
+                                class="p-button-rounded p-button-text p-button-sm p-button-danger"></button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <!-- Footer para insertar un nuevo dato -->
+            <ng-template pTemplate="footer">
+                <tr *ngIf="isEditing" [formGroup]="CuentaBancariaForm">
+                    <!-- Campo para mostrar el nombre del banco -->
+                    <td style="width: 150px;">
+                        <input id="nombreBanco" pInputText class="p-inputtext-sm w-full" [value]="descripcion" readonly />
+                    </td>
+                    <!-- Campo para ingresar el ID de la cuenta -->
+                    <td style="width: 150px;">
+                        <input id="idCuenta" pInputText formControlName="idCuenta" class="p-inputtext-sm w-full"
+                            placeholder="ID Cuenta" />
+                    </td>
+                    <!-- Dropdown para seleccionar la moneda -->
+                    <td style="width: 120px;">
+                        <p-dropdown [options]="moneda" formControlName="moneda" optionLabel="nombre" optionValue="id"
+                            class="p-inputtext-sm w-full" [filter]="true" filterBy="label" placeholder="Moneda"
+                            appendTo="body">
+                        </p-dropdown>
+                    </td>
+                    <!-- Campo para ingresar la descripción de la cuenta bancaria -->
+                    <td style="width: 180px;">
+                        <input id="nombreCuentaBancaria" pInputText formControlName="nombreCuentaBancaria"
+                            class="p-inputtext-sm w-full" placeholder="Descripción cuenta bancaria" />
+                    </td>
+                    <!-- Botones para guardar o cancelar la acción -->
+                    <td style="width: 122px;">
+                        <div class="flex gap-2 justify-content-center">
+                            <p-button icon="pi pi-check" styleClass="p-button-success p-button-sm" [text]="true" (onClick)="onSave()"
+                                pTooltip="Guardar"></p-button>
+                            <p-button icon="pi pi-times" styleClass="p-button-danger p-button-sm" [text]="true" (onClick)="onCancel()"
+                                pTooltip="Cancelar"></p-button>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-card>
+
+</div>
